@@ -9,13 +9,15 @@ export interface UIFactory {
   createInput(
     placeholder: string,
     value: string,
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    onChange: (value: string) => void
   ): JSX.Element;
+
   createSelect(
     options: { label: string; value: string }[],
     value: string,
     onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   ): JSX.Element;
+
   createContainer(children: React.ReactNode): JSX.Element;
 
   createKeyValueLine(

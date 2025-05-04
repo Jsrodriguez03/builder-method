@@ -7,7 +7,6 @@ interface DarkSelectProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
-
 export class DarkSelect implements ISelect {
   constructor(private props: DarkSelectProps) {}
 

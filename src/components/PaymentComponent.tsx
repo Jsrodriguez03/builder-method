@@ -1,9 +1,11 @@
+// src/components/PaymentComponent.tsx
 import { useState } from "react";
 import { UIFactory } from "../factory/UIFactory";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { PaymentForm } from "./PaymentForm";
 import { PaymentSummary } from "./PaymentSummary";
+import { NotificationForm } from "./NotificationForm";
 
 interface PaymentComponentProps {
   uiFactory: UIFactory;
@@ -15,6 +17,7 @@ export const PaymentComponent = ({ uiFactory }: PaymentComponentProps) => {
   const [notificationType, setNotificationType] = useState("Seleccionar");
   const [response, setResponse] = useState<any>(null);
   const [showSummary, setShowSummary] = useState(false);
+  const [showNotificationForm, setShowNotificationForm] = useState(false);
 
   const isFormValid =
     amount.trim() !== "" && paymentType !== "Seleccione un Método";
@@ -31,16 +34,41 @@ export const PaymentComponent = ({ uiFactory }: PaymentComponentProps) => {
     }
   };
 
-  const handleSendNotification = async () => {
+  const handleSendNotification = () => {
+    if (notificationType === "Seleccionar") {
+      Swal.fire({
+        toast: true,
+        position: "bottom-end",
+        icon: "error",
+        title: "Seleccione un tipo de notificación primero",
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+      });
+      return;
+    }
+
+    setShowNotificationForm(true);
+  };
+
+  const handleSubmitNotificationForm = async (notificationData: any) => {
     try {
-      const res = await axios.post(
-        "http://localhost:8080/payment/notification",
-        null,
-        {
-          params: { paymentType, amount, notificationType },
-        }
-      );
-      setResponse(res.data);
+      const payload = {
+        paymentType,
+        amount,
+        type: notificationType,
+        ...notificationData, // todos los campos específicos del tipo
+      };
+
+      console.log("Payload como params:", payload);
+
+      await axios.post("http://localhost:8080/payment/notification", payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      setShowNotificationForm(false);
+      setNotificationType("Seleccionar");
+
       Swal.fire({
         toast: true,
         position: "bottom-end",
@@ -50,15 +78,13 @@ export const PaymentComponent = ({ uiFactory }: PaymentComponentProps) => {
         timer: 5000,
         timerProgressBar: true,
       });
-      setNotificationType("Seleccionar");
     } catch (error) {
-      console.error(error);
+      console.error("Error enviando notificación:", error);
       Swal.fire({
         toast: true,
         position: "bottom-end",
         icon: "error",
-        title:
-          "Error al enviar notificación, seleccione un tipo de notificación",
+        title: "Error al enviar notificación",
         showConfirmButton: false,
         timer: 5000,
         timerProgressBar: true,
@@ -72,7 +98,19 @@ export const PaymentComponent = ({ uiFactory }: PaymentComponentProps) => {
     setNotificationType("Seleccionar");
     setResponse(null);
     setShowSummary(false);
+    setShowNotificationForm(false);
   };
+
+  if (showNotificationForm) {
+    return (
+      <NotificationForm
+        uiFactory={uiFactory}
+        notificationType={notificationType}
+        onCancel={() => setShowNotificationForm(false)}
+        onSubmit={handleSubmitNotificationForm}
+      />
+    );
+  }
 
   if (showSummary) {
     return (

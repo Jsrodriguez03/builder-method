@@ -43,9 +43,7 @@ export const PaymentForm = ({
       <label htmlFor="amount" style={{ fontSize: "15px", color: "#B4B4B4" }}>
         Monto
       </label>
-      {uiFactory.createInput("Ingrese el monto", amount, (e) =>
-        onAmountChange(e.target.value)
-      )}
+      {uiFactory.createInput("Ingrese el monto", amount, onAmountChange)}
 
       {uiFactory.createButton(
         <>

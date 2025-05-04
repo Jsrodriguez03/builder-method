@@ -5,7 +5,7 @@ import { IInput } from "../IInput";
 interface DarkInputProps {
   placeholder: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string) => void;
 }
 
 export class DarkInput implements IInput {
@@ -17,7 +17,7 @@ export class DarkInput implements IInput {
       <input
         placeholder={placeholder}
         value={value}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)} // ✅ aquí convertimos el evento en string
         style={{
           backgroundColor: "#364153",
           color: "#f9fafb",
