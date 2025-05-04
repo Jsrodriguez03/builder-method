@@ -39,4 +39,6 @@ export interface UIFactory {
       margin?: string;
     }
   ): JSX.Element;
+
+  createBtnDowload(onClick: () => void): JSX.Element;
 }

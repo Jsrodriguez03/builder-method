@@ -4,6 +4,7 @@ import { LightInput } from "../ui/ligth/LightInput";
 import { LightKeyValueLine } from "../ui/ligth/LightKeyValueLine";
 import { LightLabel } from "../ui/ligth/LightLabel";
 import { LightSelect } from "../ui/ligth/LightSelect";
+import { LigthBtnDownload } from "../ui/ligth/LigthBtnDownload";
 import { UIFactory } from "./UIFactory";
 
 export class LightUIFactory implements UIFactory {
@@ -29,5 +30,9 @@ export class LightUIFactory implements UIFactory {
 
   createLabel(text, options) {
     return <LightLabel text={text} options={options} />;
+  }
+
+  createBtnDowload(onClick) {
+    return new LigthBtnDownload({ onClick }).render();
   }
 }

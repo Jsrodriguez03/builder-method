@@ -16,7 +16,7 @@ export class DarkInput implements IInput {
       <input
         placeholder={placeholder}
         value={value}
-        onChange={(e) => onChange(e.target.value)} // ✅ aquí convertimos el evento en string
+        onChange={(e) => onChange(e.target.value)}
         style={{
           backgroundColor: "#364153",
           color: "#f9fafb",

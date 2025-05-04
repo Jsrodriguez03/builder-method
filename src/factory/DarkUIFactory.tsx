@@ -1,3 +1,4 @@
+import { DarkBtnDownload } from "../ui/dark/DarkBtnDownload";
 import { DarkButton } from "../ui/dark/DarkButton";
 import { DarkContainer } from "../ui/dark/DarkContainer";
 import { DarkInput } from "../ui/dark/DarkInput";
@@ -29,5 +30,9 @@ export class DarkUIFactory implements UIFactory {
 
   createLabel(text, options) {
     return <DarkLabel text={text} options={options} />;
+  }
+
+  createBtnDowload(onClick) {
+    return new DarkBtnDownload({ onClick }).render();
   }
 }
