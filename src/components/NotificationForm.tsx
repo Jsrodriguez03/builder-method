@@ -17,43 +17,69 @@ export const NotificationForm = ({
 }: NotificationFormProps) => {
   const [formData, setFormData] = useState<any>({});
 
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({
+  const handleChange = (field: string, value: any) => {
+    setFormData((prev: any) => ({
       ...prev,
       [field]: value,
     }));
   };
+
+  const handleScheduleChange = (value: string) => {
+    handleChange("scheduleTime", value); // dejar el "T" intacto
+  };
+
+  const label = (text: string) => (
+    <label style={{ fontSize: "15px", color: "#B4B4B4" }}>{text}</label>
+  );
 
   const renderFields = () => {
     switch (notificationType) {
       case "EMAIL":
         return (
           <>
-            {uiFactory.createInput("Para (To)", formData.to || "", (v) =>
-              handleChange("to", v)
-            )}
-            {uiFactory.createInput("Asunto", formData.subject || "", (v) =>
-              handleChange("subject", v)
-            )}
-            {uiFactory.createInput("Contenido", formData.body || "", (v) =>
-              handleChange("body", v)
-            )}
+            {label("Para (To)")}
             {uiFactory.createInput(
-              "CC (separado por comas)",
+              "Correo del destinatario",
+              formData.to || "",
+              (v) => handleChange("to", v)
+            )}
+
+            {label("Asunto")}
+            {uiFactory.createInput(
+              "Asunto del correo",
+              formData.subject || "",
+              (v) => handleChange("subject", v)
+            )}
+
+            {label("Contenido")}
+            {uiFactory.createInput(
+              "Cuerpo del mensaje",
+              formData.body || "",
+              (v) => handleChange("body", v)
+            )}
+
+            {label("CC (separado por comas)")}
+            {uiFactory.createInput(
+              "Correos CC",
               (formData.cc || []).join(","),
               (v) => handleChange("cc", String(v).split(","))
             )}
+
+            {label("BCC (separado por comas)")}
             {uiFactory.createInput(
-              "BCC (separado por comas)",
+              "Correos BCC",
               (formData.bcc || []).join(","),
               (v) => handleChange("bcc", String(v).split(","))
             )}
+
+            {label("Adjuntos (URLs separadas por coma)")}
             {uiFactory.createInput(
-              "Adjuntos (URLs separadas por comas)",
+              "URLs de archivos",
               (formData.attachments || []).join(","),
               (v) => handleChange("attachments", String(v).split(","))
             )}
 
+            {label("Prioridad")}
             {uiFactory.createSelect(
               [
                 { label: "Seleccionar", value: "Seleccionar" },
@@ -70,17 +96,28 @@ export const NotificationForm = ({
       case "SMS":
         return (
           <>
-            {uiFactory.createInput("Número", formData.phoneNumber || "", (v) =>
-              handleChange("phoneNumber", v)
-            )}
-            {uiFactory.createInput("Mensaje", formData.message || "", (v) =>
-              handleChange("message", v)
-            )}
+            {label("Número")}
             {uiFactory.createInput(
-              "Remitente (opcional)",
+              "Número de teléfono",
+              formData.phoneNumber || "",
+              (v) => handleChange("phoneNumber", v)
+            )}
+
+            {label("Mensaje")}
+            {uiFactory.createInput(
+              "Contenido del SMS",
+              formData.message || "",
+              (v) => handleChange("message", v)
+            )}
+
+            {label("Remitente (opcional)")}
+            {uiFactory.createInput(
+              "ID del remitente",
               formData.senderId || "",
               (v) => handleChange("senderId", v)
             )}
+
+            {label("¿Requiere reporte de entrega?")}
             {uiFactory.createSelect(
               [
                 { label: "Seleccionar", value: "Seleccionar" },
@@ -94,38 +131,66 @@ export const NotificationForm = ({
                   e.target.value === "true"
                 )
             )}
-            {uiFactory.createInput(
-              "Fecha Programada (YYYY-MM-DD HH:mm)",
-              formData.scheduleTime || "",
-              (v) => handleChange("scheduleTime", v)
-            )}
+
+            {label("Fecha Programada")}
+            <input
+              type="datetime-local"
+              style={{
+                backgroundColor: "#364153",
+                color: "#f9fafb",
+                padding: "14px 20px",
+                borderRadius: "10px",
+                border: "1px solid #374151",
+                width: "90%",
+                marginTop: "6px",
+                marginBottom: "24px",
+                fontSize: "16px",
+                outline: "none",
+              }}
+              onChange={(e) => handleScheduleChange(e.target.value)}
+            />
           </>
         );
 
       case "PUSH":
         return (
           <>
+            {label("Token de Dispositivo")}
             {uiFactory.createInput(
-              "Token de Dispositivo",
+              "Token único",
               formData.deviceToken || "",
               (v) => handleChange("deviceToken", v)
             )}
-            {uiFactory.createInput("Título", formData.title || "", (v) =>
-              handleChange("title", v)
-            )}
-            {uiFactory.createInput("Mensaje", formData.message || "", (v) =>
-              handleChange("message", v)
-            )}
+
+            {label("Título")}
             {uiFactory.createInput(
-              "URL de Imagen (opcional)",
+              "Encabezado del mensaje",
+              formData.title || "",
+              (v) => handleChange("title", v)
+            )}
+
+            {label("Mensaje")}
+            {uiFactory.createInput(
+              "Texto de la notificación",
+              formData.message || "",
+              (v) => handleChange("message", v)
+            )}
+
+            {label("URL de Imagen (opcional)")}
+            {uiFactory.createInput(
+              "https://imagen.jpg",
               formData.imageUrl || "",
               (v) => handleChange("imageUrl", v)
             )}
+
+            {label("Click Action")}
             {uiFactory.createInput(
-              "Click Action (URL o acción)",
+              "Acción al hacer clic",
               formData.clickAction || "",
               (v) => handleChange("clickAction", v)
             )}
+
+            {label("Prioridad")}
             {uiFactory.createSelect(
               [
                 { label: "Seleccionar", value: "Seleccionar" },
@@ -141,29 +206,46 @@ export const NotificationForm = ({
       case "WHATSAPP":
         return (
           <>
-            {uiFactory.createInput("Número", formData.phoneNumber || "", (v) =>
-              handleChange("phoneNumber", v)
-            )}
-            {uiFactory.createInput("Mensaje", formData.message || "", (v) =>
-              handleChange("message", v)
-            )}
+            {label("Número")}
             {uiFactory.createInput(
-              "URL de Media (imagen/video/documento)",
+              "Número del destinatario",
+              formData.phoneNumber || "",
+              (v) => handleChange("phoneNumber", v)
+            )}
+
+            {label("Mensaje")}
+            {uiFactory.createInput(
+              "Texto del mensaje",
+              formData.message || "",
+              (v) => handleChange("message", v)
+            )}
+
+            {label("URL de Media")}
+            {uiFactory.createInput(
+              "https://archivo.jpg",
               formData.mediaUrl || "",
               (v) => handleChange("mediaUrl", v)
             )}
+
+            {label("Caption")}
             {uiFactory.createInput(
-              "Caption (si aplica)",
+              "Texto adicional",
               formData.caption || "",
               (v) => handleChange("caption", v)
             )}
+
+            {label("Botones (separados por coma)")}
             {uiFactory.createInput(
-              "Botones (separados por coma)",
+              "Botón1,Botón2",
               (formData.interactiveButtons || []).join(","),
               (v) => handleChange("interactiveButtons", String(v).split(","))
             )}
-            {uiFactory.createInput("Idioma", formData.language || "", (v) =>
-              handleChange("language", v)
+
+            {label("Idioma")}
+            {uiFactory.createInput(
+              "es, en, etc.",
+              formData.language || "",
+              (v) => handleChange("language", v)
             )}
           </>
         );
@@ -175,10 +257,9 @@ export const NotificationForm = ({
 
   return uiFactory.createContainer(
     <>
-      <h2 style={{ fontSize: "22px", fontWeight: "600", marginBottom: "30px" }}>
-        <i className="fas fa-paper-plane text-white text-lg mr-2"></i>{" "}
+      <h1 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "20px" }}>
         Formulario de {notificationType}
-      </h2>
+      </h1>
 
       {renderFields()}
 
