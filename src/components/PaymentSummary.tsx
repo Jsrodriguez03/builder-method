@@ -49,7 +49,7 @@ export const PaymentSummary = ({
 
   return uiFactory.createContainer(
     <>
-      <h2 style={{ fontSize: "22px", fontWeight: "600", marginBottom: "30px" }}>
+      <h2 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "30px" }}>
         <i className="fas fa-receipt text-white text-lg mr-2"></i> Factura de
         Pago
       </h2>

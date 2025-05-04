@@ -22,7 +22,7 @@ export const PaymentForm = ({
 }: PaymentFormProps) => {
   return uiFactory.createContainer(
     <>
-      <h1 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "20px" }}>
+      <h1 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "30px" }}>
         Calcular Pago
       </h1>
 

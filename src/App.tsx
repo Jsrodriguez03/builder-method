@@ -19,7 +19,6 @@ const App = () => {
   return (
     <div
       style={{
-        height: "100%",
         minHeight: "100vh",
         backgroundColor: isLight ? "#f3f4f6" : "#0f172a",
         transition: "background-color 0.4s ease",

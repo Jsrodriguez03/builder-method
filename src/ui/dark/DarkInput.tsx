@@ -1,5 +1,4 @@
 // src/components/UI/Dark/DarkInput.tsx
-import React from "react";
 import { IInput } from "../IInput";
 
 interface DarkInputProps {

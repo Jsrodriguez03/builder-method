@@ -257,13 +257,14 @@ export const NotificationForm = ({
 
   return uiFactory.createContainer(
     <>
-      <h1 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "20px" }}>
+      <h1 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "30px" }}>
+        <i className="fas fa-paper-plane text-white text-lg mr-2"></i>{" "}
         Formulario de {notificationType}
       </h1>
 
       {renderFields()}
 
-      <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
+      <div style={{ display: "flex", gap: "12px" }}>
         {uiFactory.createButton(
           <>
             <i className="fas fa-times-circle text-white mr-2"></i> Cancelar

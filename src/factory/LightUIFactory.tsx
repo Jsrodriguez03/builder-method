@@ -20,10 +20,7 @@ export class LightUIFactory implements UIFactory {
   }
 
   createContainer(children) {
-    return new LightContainer({
-      children,
-      backgroundTheme: this.background,
-    }).render();
+    return new LightContainer({ children }).render();
   }
 
   createKeyValueLine(label, value, styles?) {

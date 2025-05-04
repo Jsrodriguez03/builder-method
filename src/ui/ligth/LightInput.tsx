@@ -4,7 +4,7 @@ import { IInput } from "../IInput";
 interface LightInputProps {
   placeholder: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string) => void;
 }
 
 export class LightInput implements IInput {
@@ -20,7 +20,7 @@ export class LightInput implements IInput {
       <input
         placeholder={placeholder}
         value={value}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value)}
         style={{
           backgroundColor: "#f9fafb",
           color: "#111827",

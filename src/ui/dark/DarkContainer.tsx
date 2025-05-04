@@ -18,7 +18,7 @@ export class DarkContainer implements IContainer {
           padding: "30px",
           borderRadius: "12px",
           maxWidth: "450px",
-          margin: "60px auto",
+          margin: "auto auto",
         }}
       >
         {this.props.children}

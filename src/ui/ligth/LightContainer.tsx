@@ -22,7 +22,7 @@ export class LightContainer implements IContainer {
           padding: "30px",
           borderRadius: "12px",
           maxWidth: "450px",
-          margin: "60px auto",
+          margin: "auto auto",
           boxShadow: "0 8px 20px rgba(0, 0, 0, 0.08)",
         }}
       >
