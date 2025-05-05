@@ -20,14 +20,14 @@ export const PDFReportConfigForm = ({
   paymentData,
 }: PDFReportConfigFormProps) => {
   const [config, setConfig] = useState({
-    title: "Resumen de Pago",
+    title: "Factura de Pago",
     includeLogo: true,
     includePaymentDetails: true,
     includeUserInfo: true,
     includeDate: true,
     theme: "LIGHT",
     format: "A4",
-    footerMessage: "",
+    footerMessage: "Gracias por confiar en nuestros servicios",
   });
 
   const handleChange = (field: string, value: any) => {
