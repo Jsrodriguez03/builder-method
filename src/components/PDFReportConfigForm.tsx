@@ -42,7 +42,12 @@ export const PDFReportConfigForm = ({
     try {
       const payload = {
         ...config,
-        paymentData,
+        paymentType: paymentData.paymentType,
+        paymentAmount: paymentData.amount.toString(),
+        paymentTotal: paymentData.response.toString(),
+        paymentTax: (
+          Number(paymentData.response) - Number(paymentData.amount)
+        ).toFixed(2),
       };
 
       const response = await axios.post(
