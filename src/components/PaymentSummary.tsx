@@ -11,6 +11,7 @@ interface PaymentSummaryProps {
   onNewPayment: () => void;
   onSendNotification: () => void;
   onNotificationTypeChange: (value: string) => void;
+  onGenerateReport: () => void;
 }
 
 const TAX_RATES: Record<string, number> = {
@@ -34,6 +35,7 @@ export const PaymentSummary = ({
   onNewPayment,
   onSendNotification,
   onNotificationTypeChange,
+  onGenerateReport,
 }: PaymentSummaryProps) => {
   const [showPDFConfig, setShowPDFConfig] = useState(false);
 
@@ -69,20 +71,21 @@ export const PaymentSummary = ({
 
         {/* Botón circular de descarga */}
         <button
-          onClick={() => setShowPDFConfig(true)}
+          onClick={onGenerateReport}
           style={{
             backgroundColor: "#2899D8",
             border: "none",
             borderRadius: "50%",
+            marginTop: "-25px",
             padding: "10px",
             cursor: "pointer",
             color: "#fff",
-            width: "40px",
-            height: "40px",
+            width: "50px",
+            height: "50px",
           }}
           title="Generar PDF"
         >
-          <i className="fas fa-download" style={{ fontSize: "16px" }}></i>
+          <i className="fas fa-download" style={{ fontSize: "20px" }}></i>
         </button>
       </div>
 
@@ -143,7 +146,6 @@ export const PaymentSummary = ({
         )}
       </div>
 
-      {/* Superposición del formulario de PDF */}
       {showPDFConfig && (
         <PDFReportConfigForm
           uiFactory={uiFactory}

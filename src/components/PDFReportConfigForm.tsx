@@ -1,8 +1,11 @@
 // src/components/PDFReportConfigForm.tsx
 import { useState } from "react";
+import { UIFactory } from "../factory/UIFactory";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 interface PDFReportConfigFormProps {
+  uiFactory: UIFactory;
   onClose: () => void;
   paymentData: {
     paymentType: string;
@@ -12,185 +15,169 @@ interface PDFReportConfigFormProps {
 }
 
 export const PDFReportConfigForm = ({
+  uiFactory,
   onClose,
   paymentData,
 }: PDFReportConfigFormProps) => {
-  const [includeLogo, setIncludeLogo] = useState(true);
-  const [title, setTitle] = useState("Factura de Pago");
-  const [includePaymentDetails, setIncludePaymentDetails] = useState(true);
-  const [includeUserInfo, setIncludeUserInfo] = useState(false);
-  const [theme, setTheme] = useState<"LIGHT" | "DARK">("LIGHT");
-  const [includeTimestamp, setIncludeTimestamp] = useState(true);
-  const [footerMessage, setFooterMessage] = useState(
-    "Gracias por confiar en nosotros."
-  );
-  const [format, setFormat] = useState<"A4" | "LETTER">("A4");
+  const [config, setConfig] = useState({
+    title: "Resumen de Pago",
+    includeLogo: true,
+    includePaymentDetails: true,
+    includeUserInfo: true,
+    includeDate: true,
+    theme: "LIGHT",
+    format: "A4",
+    footerMessage: "",
+  });
 
-  const handleDownload = async () => {
+  const handleChange = (field: string, value: any) => {
+    setConfig((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const label = (text: string) => (
+    <label style={{ fontSize: "15px", color: "#B4B4B4" }}>{text}</label>
+  );
+
+  const handleSubmit = async () => {
     try {
-      const config = {
-        includeLogo,
-        title,
-        includePaymentDetails,
-        includeUserInfo,
-        theme,
-        includeTimestamp,
-        footerMessage,
-        format,
-        ...paymentData,
+      const payload = {
+        ...config,
+        paymentData,
       };
 
       const response = await axios.post(
         "http://localhost:8080/payment/reporte-pago",
-        config,
-        {
-          responseType: "blob",
-        }
+        payload,
+        { responseType: "blob" }
       );
 
       const blob = new Blob([response.data], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = url;
-      link.download = "factura_pago.pdf";
+      link.href = URL.createObjectURL(blob);
+      link.download = "reporte_pago.pdf";
       link.click();
-      URL.revokeObjectURL(url);
+
+      Swal.fire({
+        toast: true,
+        position: "bottom-end",
+        icon: "success",
+        title: "PDF generado correctamente",
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+      });
+
       onClose();
     } catch (error) {
-      console.error("Error al generar el PDF:", error);
+      console.error("Error generando PDF:", error);
+      Swal.fire({
+        toast: true,
+        position: "bottom-end",
+        icon: "error",
+        title: "Error al generar PDF",
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+      });
     }
   };
 
-  return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        zIndex: 1000,
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "rgba(0,0,0,0.5)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "#000",
-          padding: "25px",
-          borderRadius: "8px",
-          width: "500px",
-          maxHeight: "90vh",
-          overflowY: "auto",
-        }}
-      >
-        <h2>Configuración del Reporte PDF</h2>
+  return uiFactory.createContainer(
+    <>
+      <h2 style={{ fontSize: "24px", fontWeight: "700", marginBottom: "30px" }}>
+        <i className="fas fa-file-pdf text-white text-lg mr-2"></i> Configurar
+        Reporte PDF
+      </h2>
 
-        <div style={{ marginBottom: "10px" }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={includeLogo}
-              onChange={() => setIncludeLogo(!includeLogo)}
-            />{" "}
-            Incluir Logo
-          </label>
-        </div>
+      {label("Título del Reporte")}
+      {uiFactory.createInput("Ej: Resumen de Pago", config.title, (v) =>
+        handleChange("title", v)
+      )}
 
-        <div style={{ marginBottom: "10px" }}>
-          <label>Título:</label>
+      {label("Mensaje de Pie")}
+      {uiFactory.createInput(
+        "Ej: Gracias por su pago",
+        config.footerMessage,
+        (v) => handleChange("footerMessage", v)
+      )}
+
+      {label("Tema del Reporte")}
+      {uiFactory.createSelect(
+        [
+          { label: "Claro", value: "LIGHT" },
+          { label: "Oscuro", value: "DARK" },
+        ],
+        config.theme,
+        (e) => handleChange("theme", e.target.value)
+      )}
+
+      {label("Formato del PDF")}
+      {uiFactory.createSelect(
+        [
+          { label: "A4", value: "A4" },
+          { label: "Carta", value: "LETTER" },
+          { label: "Legal", value: "LEGAL" },
+        ],
+        config.format,
+        (e) => handleChange("format", e.target.value)
+      )}
+
+      {label("Elementos a Incluir")}
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <label style={{ color: "#fff" }}>
           <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={{ width: "100%" }}
+            type="checkbox"
+            checked={config.includeLogo}
+            onChange={(e) => handleChange("includeLogo", e.target.checked)}
+            style={{ marginRight: "8px" }}
           />
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={includePaymentDetails}
-              onChange={() => setIncludePaymentDetails(!includePaymentDetails)}
-            />{" "}
-            Incluir Detalles de Pago
-          </label>
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={includeUserInfo}
-              onChange={() => setIncludeUserInfo(!includeUserInfo)}
-            />{" "}
-            Incluir Info Usuario
-          </label>
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>Tema:</label>
-          <select
-            value={theme}
-            onChange={(e) => setTheme(e.target.value as any)}
-          >
-            <option value="LIGHT">Claro</option>
-            <option value="DARK">Oscuro</option>
-          </select>
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={includeTimestamp}
-              onChange={() => setIncludeTimestamp(!includeTimestamp)}
-            />{" "}
-            Incluir Fecha/Hora
-          </label>
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>Mensaje Pie de Página:</label>
-          <textarea
-            value={footerMessage}
-            onChange={(e) => setFooterMessage(e.target.value)}
-            style={{ width: "100%" }}
+          Incluir Logo
+        </label>
+        <label style={{ color: "#fff" }}>
+          <input
+            type="checkbox"
+            checked={config.includePaymentDetails}
+            onChange={(e) =>
+              handleChange("includePaymentDetails", e.target.checked)
+            }
+            style={{ marginRight: "8px" }}
           />
-        </div>
-
-        <div style={{ marginBottom: "10px" }}>
-          <label>Formato:</label>
-          <select
-            value={format}
-            onChange={(e) => setFormat(e.target.value as any)}
-          >
-            <option value="A4">A4</option>
-            <option value="LETTER">Carta</option>
-          </select>
-        </div>
-
-        <div
-          style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}
-        >
-          <button onClick={onClose} style={{ padding: "6px 12px" }}>
-            Cancelar
-          </button>
-          <button
-            onClick={handleDownload}
-            style={{
-              padding: "6px 12px",
-              background: "#2899D8",
-              color: "#fff",
-            }}
-          >
-            Generar PDF
-          </button>
-        </div>
+          Incluir Detalles del Pago
+        </label>
+        <label style={{ color: "#fff" }}>
+          <input
+            type="checkbox"
+            checked={config.includeUserInfo}
+            onChange={(e) => handleChange("includeUserInfo", e.target.checked)}
+            style={{ marginRight: "8px" }}
+          />
+          Incluir Información del Usuario
+        </label>
+        <label style={{ color: "#fff" }}>
+          <input
+            type="checkbox"
+            checked={config.includeDate}
+            onChange={(e) => handleChange("includeDate", e.target.checked)}
+            style={{ marginRight: "8px" }}
+          />
+          Incluir Fecha del Reporte
+        </label>
       </div>
-    </div>
+
+      <div style={{ display: "flex", gap: "12px", marginTop: "25px" }}>
+        {uiFactory.createButton(
+          <>
+            <i className="fas fa-times text-white mr-2"></i> Cancelar
+          </>,
+          onClose
+        )}
+        {uiFactory.createButton(
+          <>
+            <i className="fas fa-file-pdf text-white mr-2"></i> Generar PDF
+          </>,
+          handleSubmit
+        )}
+      </div>
+    </>
   );
 };

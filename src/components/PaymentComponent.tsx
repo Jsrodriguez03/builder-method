@@ -1,4 +1,3 @@
-// src/components/PaymentComponent.tsx
 import { useState } from "react";
 import { UIFactory } from "../factory/UIFactory";
 import axios from "axios";
@@ -6,6 +5,7 @@ import Swal from "sweetalert2";
 import { PaymentForm } from "./PaymentForm";
 import { PaymentSummary } from "./PaymentSummary";
 import { NotificationForm } from "./NotificationForm";
+import { PDFReportConfigForm } from "./PDFReportConfigForm";
 
 interface PaymentComponentProps {
   uiFactory: UIFactory;
@@ -18,6 +18,7 @@ export const PaymentComponent = ({ uiFactory }: PaymentComponentProps) => {
   const [response, setResponse] = useState<any>(null);
   const [showSummary, setShowSummary] = useState(false);
   const [showNotificationForm, setShowNotificationForm] = useState(false);
+  const [showReportConfig, setShowReportConfig] = useState(false); // <-- control del PDF form
 
   const isFormValid =
     amount.trim() !== "" && paymentType !== "Seleccione un Método";
@@ -57,10 +58,8 @@ export const PaymentComponent = ({ uiFactory }: PaymentComponentProps) => {
         paymentType,
         amount,
         type: notificationType,
-        ...notificationData, // todos los campos específicos del tipo
+        ...notificationData,
       };
-
-      console.log("Payload como params:", payload);
 
       await axios.post("http://localhost:8080/payment/notification", payload, {
         headers: { "Content-Type": "application/json" },
@@ -99,8 +98,10 @@ export const PaymentComponent = ({ uiFactory }: PaymentComponentProps) => {
     setResponse(null);
     setShowSummary(false);
     setShowNotificationForm(false);
+    setShowReportConfig(false);
   };
 
+  // Mostrar formulario de notificación
   if (showNotificationForm) {
     return (
       <NotificationForm
@@ -112,6 +113,18 @@ export const PaymentComponent = ({ uiFactory }: PaymentComponentProps) => {
     );
   }
 
+  // Mostrar formulario de configuración PDF
+  if (showReportConfig && response) {
+    return (
+      <PDFReportConfigForm
+        uiFactory={uiFactory}
+        onClose={() => setShowReportConfig(false)}
+        paymentData={{ paymentType, amount, response }}
+      />
+    );
+  }
+
+  // Mostrar resumen de pago
   if (showSummary) {
     return (
       <PaymentSummary
@@ -123,10 +136,12 @@ export const PaymentComponent = ({ uiFactory }: PaymentComponentProps) => {
         onNotificationTypeChange={setNotificationType}
         onSendNotification={handleSendNotification}
         onNewPayment={handleNewPayment}
+        onGenerateReport={() => setShowReportConfig(true)}
       />
     );
   }
 
+  // Mostrar formulario de pago
   return (
     <PaymentForm
       uiFactory={uiFactory}
